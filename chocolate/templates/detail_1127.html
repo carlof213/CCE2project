@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Choco Detail{% endblock %}
+
+	{% block extrajs %}
+	<script type="text/javascript">
+	// いいねボタンが押された時
+	document.getElementById('ajax-like').addEventListener('click', e => {
+		e.preventDefault();
+		const url = '{% url "chocolate:like" %}';
+		fetch(url, {
+		method: 'POST',
+		body: `chocopost_pk={{ chocopost.pk }}`,
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+			'X-CSRFToken': '{{ csrf_token }}',
+		},
+		}).then(response => {
+		return response.json();
+		}).then(response => {
+		// いいね数を書き換える
+		const counter = document.getElementById('like-count')
+		counter.textContent = response.like_count
+		const icon = document.getElementById('like-icon')
+		// いいねした時はハートを塗る
+		if (response.method == 'create') {
+			icon.classList.remove('far')
+			icon.classList.add('fas')
+			icon.id = 'like-icon'
+		} else {
+			icon.classList.remove('fas')
+			icon.classList.add('far')
+			icon.id = 'like-icon'
+		}
+		}).catch(error => {
+		console.log(error);
+		});
+	});
+	</script>
+	{% endblock %}
+
+    {% block contents %}
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<center><h1>{{ object.title }}</h1></center>
+							<span class="image main"><img src="{{ object.image.url }}" ></img></span>
+							<p>{{ object.comment }}</p>
+							<p>購入詳細：<br>{{ object.comment2 }}</p>
+							<p>{{ object.posted_at }}に投稿</p>
+                			{% if request.user == object.user %}
+                    			<form method="POST">
+                        			<a href="{% url 'chocolate:photo_delete' object.pk %}" class="btn btn-primary" my-2>削除する</a>
+                			{% endif %}
+						</div>
+						<div class="card-header">
+							{% if is_user_liked %}
+							<button type="button" id="ajax-like" style="border:none;background:none">
+							  <!-- すでにいいねしている時はfasクラス -->
+							  <i class="fas fa-heart text-danger" id="like-icon"></i>
+							</button>
+							{% else %}
+							<button type="button" id="ajax-like" style="border:none;background:none">
+							  <!-- いいねしていないときはfarクラス -->
+							  <i class="far fa-heart text-danger" id="like-icon"></i>
+							</button>
+							{% endif %}
+							<!-- いいねの数 -->
+							<span id="like-count">{{ like_count }}</span>
+							<span>いいね</span>
+						  </div>
+						
+						<div class="comment">
+							<h2>コメント一覧</h2>
+							{% for comment in chocolate.comment_set.all %}
+								<div class="comment-content">
+								<p>{{ comment.author }}:{{ comment.created_at }}</p>
+								<p>{{ comment.content }}</p>
+								</div>
+							{% endfor %}
+						</div>
+						
+						<div class="comment-form">
+							<h2>コメント投稿:</h2>
+							<form action='{% url "chocolate:photo_detail" chocopost.pk %}' method="post">
+							{% csrf_token %}
+							{{ comment_form }}
+							<div>
+								<button type="submit">送信</button>
+							</div>
+							</form>
+						</div>
+					</div>
+					{% endblock %}

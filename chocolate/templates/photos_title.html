@@ -1,0 +1,24 @@
+
+
+      <section class="py-5 text-center container">
+        <div class="row py-lg-5">
+          <div class="col-lg-6 col-md-8 mx-auto">
+            <h1 class="fw-light">Chocolate love</h1>
+            <center><p class="lead text-muted">貴方好みのチョコレートが見つかりますように！</p></center>
+            <p>
+              {% if user.is_authenticated %}
+              <div style="display:inline-flex">
+                <a href="{% url 'chocolate:post' %}" class="btn btn-danger my-2">Post</a>
+                <form action="{% url 'accounts:logout' %}" method="post">
+                  {% csrf_token %}
+                  <a class="btn btn-secondary my-2" href="{% url 'accounts:logout' %}" onclick="this.closest('form').submit();return false;">Log out</a>
+                </form>
+              </div>
+              {% else %}
+              <a href="{% url 'accounts:signup' %}" class="btn btn-danger my-2">今すぐサインアップ</a>
+              <a href="{% url 'accounts:login' %}" class="btn btn-secondary my-2">登録済みの方はログイン</a>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </section>

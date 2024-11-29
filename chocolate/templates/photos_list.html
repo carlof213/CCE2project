@@ -1,0 +1,30 @@
+
+
+          <div id="main">
+						<div class="inner">
+              
+							<section class="tiles">
+                {% for record in object_list %}
+								<article class="style1">
+									<span class="image">
+										<img src="{{ record.image.url }}" alt="" width ='320' height = '250' />
+									</span>
+                  
+									<a href='{% url 'chocolate:photo_detail' record.pk %}'>
+										<h2>{{ record.title|truncatechars:6 }}</h2>
+										<div class="content">
+											<p>{{ record.user.username }}</p>
+										</div>
+                    
+                    <div class="btn-group">
+                      <button type="button" class="text-white"
+                      onclick = "location.href = '{% url 'chocolate:photos_cat' category=record.category.id %}'">{{ record.category.title }}</button>
+                    </div>
+									</a>
+                  
+								</article>
+                {% endfor %}
+              </section>
+              
+						</div>
+					</div>
